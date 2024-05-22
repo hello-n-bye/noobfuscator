@@ -7,8 +7,13 @@
 const fs = require("fs");
 const { exec } = require("child_process");
 
-const path = "./poop.lua"; // The location of the source-file
-const configuration = "./config.json"; // The location of the configuration file (for obfuscator details)
+const path = "./poop.lua";
+const configuration = "./config.json";
+
+function encryptString(str) {
+   let encrypted = str.split('').map(char => '\\x' + char.charCodeAt(0).toString(16)).join('');
+   return encrypted;
+}
 
 function obfuscate(lua) {
    let names = lua.match(/(?<=local |function |^)([a-zA-Z_][a-zA-Z0-9_]*)\b/g);
@@ -41,11 +46,14 @@ function obfuscate(lua) {
       }
    });
 
+   lua = lua.replace(/"([^"]*)"/g, (match, str) => {
+      return '"' + encryptString(str) + '"';
+   });
+
    return lua;
 }
 
 
-// Read the config file
 console.log("Reading the config file...");
 fs.readFile(configuration, "utf8", (err, configJson) => {
    if (err) {
@@ -56,7 +64,6 @@ fs.readFile(configuration, "utf8", (err, configJson) => {
    let config = JSON.parse(configJson);
    let obfuscationString = `--> Obfuscated with ${config.name} ${config.version} <--\n\n`;
 
-   // Run minifier.js on the source file
    console.log("Running minifier on the source-file...");
    exec(`node src/minifier.js ${path}`, (err) => {
       if (err) {
