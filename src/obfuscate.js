@@ -1,18 +1,48 @@
 // src/obfuscate.js
-// Renames variables, function names -> turns `local function` into `function`.
-
-// Average obfuscation-time: ~0.667s
-
+// Average obfuscation-time: ~2s
 
 const fs = require("fs");
 const { exec } = require("child_process");
+
+// function getRandomComment() {
+//    const data = JSON.parse(fs.readFileSync("./ignore-me.json", "utf8"));
+
+//    const types = Object.keys(data.comments);
+//    const randomType = types[Math.floor(Math.random() * types.length)];
+
+//    const quotes = data.comments[randomType];
+//    const randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
+
+//    return randomQuote;
+// }
 
 const path = "./poop.lua";
 const configuration = "./config.json";
 
 function encryptString(str) {
-   let encrypted = str.split('').map(char => '\\x' + char.charCodeAt(0).toString(16)).join('');
+   let encrypted = str.split("").map(char => "\\x" + char.charCodeAt(0).toString(16)).join("");
    return encrypted;
+}
+
+function getRandomUselessCode() {
+   const data = JSON.parse(fs.readFileSync("./ignore-me.json", "utf8"));
+   const types = data.code;
+
+   const randomIndex = Math.floor(Math.random() * types.length);
+   let uselessCode = types[randomIndex];
+
+   const variableNameLength = Math.floor(Math.random() * 10) + 5;
+   const possibleCharacters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+
+   let variableName = "";
+   for (let i = 0; i < variableNameLength; i++) {
+      variableName += possibleCharacters.charAt(Math.floor(Math.random() * possibleCharacters.length));
+   }
+
+   uselessCode = uselessCode.replace(/_/g, variableName);
+   uselessCode = uselessCode.replace(/(['"])(.*?)\1/g, (match, p1, p2) => `${p1}${encryptString(p2)}${p1}`);
+
+   return uselessCode;
 }
 
 function obfuscate(lua) {
@@ -21,13 +51,19 @@ function obfuscate(lua) {
    console.log("Starting obfuscation process...");
 
    let used = new Set();
+   let luaKeywords = ["and", "break", "do", "else", "elseif", "end", "false", "for", "function", "if", "in", "local", "nil", "not", "or", "repeat", "return", "then", "true", "until", "while"];
    names.forEach((name) => {
-      if (name !== "function" && name !== "local") {
+      if (!luaKeywords.includes(name)) {
          let converted;
 
          do {
-            let num = Math.floor(Math.random() * 10) + 1;
-            converted = "_".repeat(num);
+            const variableNameLength = Math.floor(Math.random() * 10) + 5;
+            const possibleCharacters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+
+            converted = "";
+            for (let i = 0; i < variableNameLength; i++) {
+               converted += possibleCharacters.charAt(Math.floor(Math.random() * possibleCharacters.length));
+            }
          } while (used.has(converted));
 
          used.add(converted);
@@ -46,13 +82,28 @@ function obfuscate(lua) {
       }
    });
 
-   lua = lua.replace(/"([^"]*)"/g, (match, str) => {
-      return '"' + encryptString(str) + '"';
-   });
+   const lines = lua.split('\n');
+   for (let i = 0; i < lines.length; i++) {
+      const numberOfUselessLines = Math.floor(Math.random() * 1000) + 1;
+      for (let j = 0; j < numberOfUselessLines; j++) {
+         const uselessCode = getRandomUselessCode();
+         lines[i] += ' ' + uselessCode;
+      }
+   }
+   lua = lines.join('\n');
+   
+   lua = lua.replace(/"([^"]*)"/g, (match, str) => `"${encryptString(str)}"`);
+   // lua = lua.replace(/\b(local|==|do|;)\b/g, (match) => {
+   //    if (Math.random() > 0.1) {
+   //       return `${match}--[[${getRandomComment()}]]`;
+   //    } else {
+   //       return match;
+   //    }
+   // });
+   lua = lua.replace(/\b(end|;)\b/g, (match) => `${match} ${getRandomUselessCode()}`);
 
    return lua;
 }
-
 
 console.log("Reading the config file...");
 fs.readFile(configuration, "utf8", (err, configJson) => {
@@ -62,7 +113,6 @@ fs.readFile(configuration, "utf8", (err, configJson) => {
    }
 
    let config = JSON.parse(configJson);
-   let obfuscationString = `--> Obfuscated with ${config.name} ${config.version} <--\n\n`;
 
    console.log("Running minifier on the source-file...");
    exec(`node src/minifier.js ${path}`, (err) => {
@@ -78,7 +128,7 @@ fs.readFile(configuration, "utf8", (err, configJson) => {
             return;
          }
 
-         let obfuscated = obfuscationString + obfuscate(lua);
+         let obfuscated = `([[(_Obfuscated With ${config.name}-${config.version}_)]]):gsub("-", (function(...) ${obfuscate(lua)} end))`;
 
          console.log("Writing the obfuscated file...");
          fs.writeFile(path, obfuscated, "utf8", (err) => {
