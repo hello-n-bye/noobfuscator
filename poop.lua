@@ -1,3 +1,3 @@
 --> Obfuscated with Noobfuscator 0.1 <--
 
-local ___="Hello, world from Noobfuscator example!"local function _________(...)return print(...)end;_________(___)
+local _________="\x48\x65\x6c\x6c\x6f\x2c\x20\x77\x6f\x72\x6c\x64\x20\x66\x72\x6f\x6d\x20\x4e\x6f\x6f\x62\x66\x75\x73\x63\x61\x74\x6f\x72\x20\x65\x78\x61\x6d\x70\x6c\x65\x21"local function __(...)return print(...)end;__(_________)
