@@ -9,8 +9,12 @@ import subprocess
 import datetime
 import string
 import requests
+from dotenv import load_dotenv
 
+account = os.getenv("WINDOWS_USER") # For example, mine would be "Suno"
 config = "config.json"
+
+print("✅ Found account")
 
 def encrypt_string(str):
     return ''.join(['\\x{:02x}'.format(ord(c)) for c in str])
@@ -154,7 +158,8 @@ class Obfuscate(commands.Cog):
                         config_data = json.load(f)
 
                      try:
-                        result = subprocess.run([r"C:\Users\Suno\AppData\Roaming\npm\luamin.cmd", "-f", r"C:\Users\Suno\Downloads\source.lua"], capture_output=True, text=True, check=True)
+                        current_path = os.getcwd()
+                        result = subprocess.run([f"C:/Users/{account}/AppData/Roaming/npm/luamin.cmd", "-f", f"{current_path}\\discord-app\\source-files\\{cutoutName}_{unique_identification_code}.lua"], capture_output=True, text=True, check=True)
 
                         with open(f"discord-app/source-files/{cutoutName}_{unique_identification_code}.lua", "w", encoding="utf8") as file:
                            file.write(result.stdout)
