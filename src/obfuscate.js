@@ -84,7 +84,7 @@ function obfuscate(lua) {
 
    const lines = lua.split('\n');
    for (let i = 0; i < lines.length; i++) {
-      const numberOfUselessLines = Math.floor(Math.random() * 1000) + 1;
+      const numberOfUselessLines = Math.floor(Math.random() * 1500) + 1;
       for (let j = 0; j < numberOfUselessLines; j++) {
          const uselessCode = getRandomUselessCode();
          lines[i] += ' ' + uselessCode;
