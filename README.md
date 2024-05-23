@@ -1,5 +1,5 @@
 # Noobfuscator 🐈
-The world's worst open-sourced obfuscator, built in pure JavaScript.
+The world's worst open-sourced obfuscator, built in pure JavaScript _(and Python)_.
 
 ## Discord App! 🤖
 * If you'd like to install Noobfuscator in your own server, **[click here](https://discord.com/oauth2/authorize?client_id=1242984616558854154)**
