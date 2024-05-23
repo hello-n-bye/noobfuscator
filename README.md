@@ -1,6 +1,10 @@
 # Noobfuscator 🐈
 The world's worst open-sourced obfuscator, built in pure JavaScript.
 
+## Discord App! 🤖
+* If you'd like to install Noobfuscator in your own server, **[click here](https://discord.com/oauth2/authorize?client_id=1242984616558854154)**
+* Last updated on **5/22/2024**
+
 ## Features
 1. Lua minification
 2. Rename variables, function names & types → `local function` → `function`
@@ -8,7 +12,6 @@ The world's worst open-sourced obfuscator, built in pure JavaScript.
 4. Useless code → `fqPENNHcydrSze = table.maxn({7, 8, 9})` or `NfnyjjkNE = string.upper('\x68\x65\x6c\x6c\x6f')`
 
 ## Images 📷
-![image](https://github.com/hello-n-bye/noobfuscator/assets/159689944/6c3d7c7a-5c6a-44ad-bd22-b8d4fc814752) ![image](https://github.com/hello-n-bye/noobfuscator/assets/159689944/6e501091-4dd1-44d5-82a3-c7e6b195be80)
 ![image](https://github.com/hello-n-bye/noobfuscator/assets/159689944/da029627-bddc-431f-b8da-751ac43a4545)
 
 
